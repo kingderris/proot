@@ -9,7 +9,7 @@ stages:
 
 before_script:
   - apt-get update -qq
-  - apt-get install -qq clang-tools-4.0 curl libtalloc-dev uthash-dev libarchive-dev gdb strace realpath swig lcov
+  - apt-get install -qq clang-tools-4.0 curl gdb lcov libarchive-dev libtalloc-dev realpath strace swig uthash-dev
 
 check:
   stage: check
