@@ -486,7 +486,7 @@ int handle_tracee_event_kernel_4_8(Tracee *tracee, int tracee_status)
 		case SIGTRAP | PTRACE_EVENT_SECCOMP2 << 8:
 		case SIGTRAP | PTRACE_EVENT_SECCOMP << 8:
 
-                	if (!seccomp_detected && seccomp_enabled) {
+			if (!seccomp_detected && seccomp_enabled) {
 				VERBOSE(tracee, 1, "ptrace acceleration (seccomp mode 2) enabled");
 				tracee->seccomp = ENABLED;
 				seccomp_detected = true;
@@ -501,22 +501,23 @@ int handle_tracee_event_kernel_4_8(Tracee *tracee, int tracee_status)
 				/* SECCOMP TRAP can only be received for
  				 * sysenter events, ignore otherwise */
 				if (!IS_IN_SYSENTER(tracee)) {
-					tracee->restart_how = PTRACE_CONT;
+					tracee->restart_how = PTRACE_SYSCALL;
 					return 0;
-                               	}
-                                status = ptrace(PTRACE_GETEVENTMSG, tracee->pid, NULL, &flags);
-                                if (status < 0)
-                                        break;
+				}
 
-                                    if (tracee->seccomp == ENABLED && (flags & FILTER_SYSEXIT) == 0) {
-                        		tracee->restart_how = PTRACE_CONT;
-                        		translate_syscall(tracee);
+				status = ptrace(PTRACE_GETEVENTMSG, tracee->pid, NULL, &flags);
 
-                        		if (tracee->seccomp == DISABLING)
-                                		tracee->restart_how = PTRACE_SYSCALL;
-                        		break;
-                                    }
-                	}
+				if (status < 0)
+					break;
+
+				if (tracee->seccomp == ENABLED && (flags & FILTER_SYSEXIT) == 0) {
+					tracee->restart_how = PTRACE_CONT;
+					translate_syscall(tracee);
+					if (tracee->seccomp == DISABLING)
+						tracee->restart_how = PTRACE_SYSCALL;
+					break;
+				}
+			}
 
 			/* Fall through. */
 		case SIGTRAP | 0x80:
