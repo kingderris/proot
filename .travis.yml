@@ -11,7 +11,7 @@ compiler: gcc
 
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq clang-tools-6.0 curl gdb lcov libarchive-dev libtalloc-dev realpath sloccount strace swig uthash-dev
+ - sudo apt-get install -qq clang-tools-6.0 curl gdb lcov libarchive-dev libc6-dev-i386 libtalloc-dev realpath sloccount strace swig uthash-dev
 
 script:
   - sloccount --details .
